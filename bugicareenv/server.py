@@ -6,6 +6,20 @@ from io import BytesIO
 import base64
 import cv2
 
+from gtts import gTTS
+import speech_recognition as sr
+import playsound
+
+def speak(text):
+
+    tts = gTTS(text=text, lang='ko')
+
+    filename='ttsWAV.wav'
+
+    tts.save(filename)  # 음성 파일 저장
+
+    playsound.playsound(filename)   # 음성 파일 출력
+
 app = Flask(__name__)
 
 @app.route("/image", methods = ["POST"])
@@ -30,6 +44,19 @@ def image2():
 	
 	return img_dict
 
+@app.route("/tts", methods = ["POST"])
+def tts():
+    a = request.form.get('name')
+    print(a)
+    print(type(a))
+    speak(a)
+    return f'{a}'
+    
+# tts API를 위해 host와 port 임시 변경. 나중에 AWS와 Flask 연결 유무에 따라 host 변경
+# if __name__ == "__main__":
+# 	app.debug = True
+# 	app.run(host = "127.0.0.1", port = 5001)
+
 if __name__ == "__main__":
 	app.debug = True
-	app.run(host = "127.0.0.1", port = 5001)
+	app.run(host = "0.0.0.0", port = 80)
