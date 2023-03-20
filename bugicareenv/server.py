@@ -47,10 +47,9 @@ def image2():
 @app.route("/tts", methods = ["POST"])
 def tts():
     a = request.form.get('name')
-    print(a)
-    print(type(a))
-    speak(a)
-    return f'{a}'
+    print(a)	# Flask 서버로 잘 넘어왔는지 확인
+    speak(a)	# tts 함수로 텍스트를 넘겨 스피커로 출력하게 함
+    return f'{a}'  # 확인용 반환값. 입력한 값 그대로 반환
     
 # tts API를 위해 host와 port 임시 변경. 나중에 AWS와 Flask 연결 유무에 따라 host 변경
 # if __name__ == "__main__":
