@@ -12,10 +12,11 @@ import requests, json
 from gtts import gTTS
 import speech_recognition as sr
 import playsound
+import matplotlib.pyplot as plt
+from PIL import Image
+
 
 model = torch.hub.load('ultralytics/yolov5', 'custom', path='/home/ubuntu/BugiCareServer_Flask/last.pt', force_reload = True)
-
-temp = base64.b64encode(cv2.imencode('.jpg', cv2.imread('test.jpg'))[1]).decode()
 
 def speak(text):
     tts = gTTS(text=text, lang='ko')
@@ -25,48 +26,47 @@ def speak(text):
 
 app = Flask(__name__)
 
-image = base64.b64encode(cv2.imencode('.jpg', cv2.imread('test.jpg'))[1]).decode()
-
-@app.route("/sendImage", methods = ["POST"])
-def receiveImage():
-    # 이미지 데이터 받기
-    img_encoded = np.fromstring(request.data, np.uint8)
-
-    # 인코딩된 이미지 디코딩
-    img = cv2.imdecode(img_encoded, cv2.IMREAD_UNCHANGED)
-
-    result = model(img)
-    print(result)
-
-    return {'result', 'success'}
-
 @app.route("/image", methods = ["POST"])
 def image():
     file = request.files['file']
     img_str = file.read()
     img_data = base64.b64decode(img_str)
     img_np = np.frombuffer(img_data, np.uint8)
-    global temp
-    temp = base64.b64encode(cv2.imencode('.jpg', img_np)[1]).decode()
     img = cv2.imdecode(img_np, cv2.IMREAD_COLOR)
 
     cv2.imwrite('received.jpg', img)
     result = model(img)
-    
+    print(result)
+
+    if img is None:
+        print('Image load failed')
+        sys.exit()
+
+   # cv2.imshow('YOLO', np.squeeze(result.render()))
+    # 이미지 디스플레이
+    #plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+    #plt.show()
+    # PIL 이미지 객체 생성
+    pil_img = Image.fromarray(img)
+
+    # 이미지 디스플레이
+    pil_img.show()
+
+    temp_dict = {'text': result}
+    #temp_json = json.dumps(temp_dict)
     headers = {'Content-Type': 'application/json', 'charset': 'utf-8'}
-    data = {'result', result}
-    #response = requests.post('http://15.164.7.163:8080/result', data=data)
 
-    return 'ok'
+    return "zz"
 
-@app.route("/cctv", methods = ["GET"])
-def cctv():
-    print(type(temp))
-	img_dict = {'img': temp}
-	img_json = json.dumps(img_dict)
+@app.route("/image2", methods = ["GET"])
+def image2():
+	img = cv2.imread('test.jpg')
+	img_str = base64.b64encode(cv2.imencode('.jpg', img)[1]).decode()
+	img_dict = {'img': img_str}
+	img_dict = json.dumps(img_dict)
 	headers = {'Content-Type': 'application/json', 'charset': 'utf-8'}
 	
-	return img_json
+	return img_dict
 
 @app.route("/tts", methods = ["POST"])
 def tts():
