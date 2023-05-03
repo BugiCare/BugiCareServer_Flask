@@ -23,24 +23,36 @@ def speak(text):
 
 app = Flask(__name__)
 
-@app.route("/image", methods = ["POST"])
-def image():
-    img_str = request.data
-    img_bytes = img_str.decode()
-    img_decoded = base64.b64decode(img_bytes)
-    img_array = np.frombuffer(img_decoded, dtype=np.uint8)
-    print(img_array)
-    img = cv2.imdecode(img_array, cv2.IMREAD_UNCHANGED)
+@app.route("/sendImage", methods = ["POST"])
+def receiveImage():
+    # 이미지 데이터 받기
+    img_encoded = np.fromstring(request.data, np.uint8)
+
+    # 인코딩된 이미지 디코딩
+    img = cv2.imdecode(img_encoded, cv2.IMREAD_UNCHANGED)
+
     result = model(img)
     print(result)
 
-    #cv2.imwrite('received_image.jpg', img, [int(cv2.IMWRITE_JPEG_QUALITY), 90])
-    
+    return {'result', 'success'}
+
+@app.route("/image", methods = ["POST"])
+def image():
+    file = request.files['file']
+    img_str = file.read()
+    img_data = base64.b64decode(img_str)
+    img_np = np.frombuffer(img_data, np.uint8)
+    img = cv2.imdecode(img_np, cv2.IMREAD_COLOR)
+
+    cv2.imwrite('received.jpg', img)
+    result = model(img)
+    print(result)
+
     temp_dict = {'text': result}
-    temp_json = json.dumps(temp_dict)
+    #temp_json = json.dumps(temp_dict)
     headers = {'Content-Type': 'application/json', 'charset': 'utf-8'}
 
-    return temp_json
+    return "zz"
 
 @app.route("/image2", methods = ["GET"])
 def image2():
