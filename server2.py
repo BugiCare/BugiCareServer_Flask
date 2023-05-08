@@ -42,15 +42,15 @@ def image():
         print('Image load failed')
         sys.exit()
 
-   # cv2.imshow('YOLO', np.squeeze(result.render()))
+    cv2.imshow('YOLO', np.squeeze(result.render()))
     # 이미지 디스플레이
     #plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
     #plt.show()
     # PIL 이미지 객체 생성
-    pil_img = Image.fromarray(img)
+    #pil_img = Image.fromarray(img)
 
     # 이미지 디스플레이
-    pil_img.show()
+    #pil_img.show()
 
     temp_dict = {'text': result}
     #temp_json = json.dumps(temp_dict)
