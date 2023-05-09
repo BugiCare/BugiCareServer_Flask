@@ -1,7 +1,5 @@
 from flask import Flask, jsonify, request
 
-from PIL import Image
-import json
 from io import BytesIO
 import base64
 import cv2
@@ -9,29 +7,12 @@ import torch
 import numpy as np
 import requests, json
 
-from gtts import gTTS
-import speech_recognition as sr
-import playsound
-
 # YOLO model
 model = torch.hub.load('ultralytics/yolov5', 'custom', path='/home/ubuntu/BugiCareServer_Flask/last.pt', force_reload = True)
 # 라즈베리파이에서 온 이미지를 저장하는 변수
 temp = base64.b64encode(cv2.imencode('.jpg', cv2.imread('test.jpg'))[1]).decode()
 
 app = Flask(__name__)
-
-@app.route("/sendImage", methods = ["POST"])
-def receiveImage():
-    # 이미지 데이터 받기
-    img_encoded = np.fromstring(request.data, np.uint8)
-
-    # 인코딩된 이미지 디코딩
-    img = cv2.imdecode(img_encoded, cv2.IMREAD_UNCHANGED)
-
-    result = model(img)
-    print(result)
-
-    return {'result', 'success'}
 
 @app.route("/image", methods = ["POST"])
 def image():
@@ -52,10 +33,11 @@ def image():
     # 이미지 저장 후, 모델을 통해 결과 받기
     cv2.imwrite('received.jpg', img)
     result = model(img)
+    print(result)
     
     # 결과값 스프링부트로 전달
-    data = {'result', result}
-    response = requests.post('http://15.164.7.163:8080/result', json=data)
+    data = {'result' : str(result)}
+    requests.post('http://15.164.7.163:8080/result', json=data)
 
     return 'ok'
 
