@@ -1,4 +1,12 @@
-# ✔️ flask 서버 실행 방법
+# BugiCareServer_Flask
+
+> 2023 HSU Capstone AI를 활용한 어르신 돌봄 시스템 Bugicare의 Flask Server입니다.
+
+</br>
+
+## ✔️ GUIDES
+
+AWS의 ubuntu 환경에서 실행하였습니다.
 
 ```shell
 $cd BugiCareServer_Flask
@@ -7,7 +15,7 @@ $sudo python3 server.py
 
 </br>
 
-# ✔️ API
+## ✏️ API
 
 ##### http://3.36.218.186:5000/image
 
