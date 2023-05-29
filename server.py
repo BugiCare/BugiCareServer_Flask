@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request
+from flask_cors import cross_origin
 
 from io import BytesIO
 import base64
@@ -33,6 +34,8 @@ def image():
     # 이미지 저장 후, 모델을 통해 결과 받기
     cv2.imwrite('received.jpg', img)
     result = model(img)
+
+    #cv2.imshow('YOLO', np.squeeze(result.render()))
     print(result)
     
     # 결과값 스프링부트로 전달
@@ -42,6 +45,7 @@ def image():
     return 'ok'
 
 @app.route("/cctv", methods = ["GET"])
+@cross_origin()
 def cctv():
     global temp
     img_dict = {'img': temp}
